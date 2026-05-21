@@ -42,3 +42,8 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+frontend/pokedex/node_modules/
+frontend/pokedex/.angular/
+frontend/pokedex/dist/
+backend/iaQuesters/iaQuesters/target/

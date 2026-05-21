@@ -47,4 +47,19 @@ export class TipoService {
   crearPokemon(pokemon: { nombre: string; nivel: number; tipo: { id: number } }): Observable<Pokemon> {
     return this.http.post<Pokemon>(`${this.apiUrl}/pokemones`, pokemon);
   }
+  editarTipo(id: number, tipo: Partial<Tipo>): Observable<Tipo> {
+    return this.http.put<Tipo>(`${this.apiUrl}/tipos/${id}`, tipo);
+  }
+
+  borrarTipo(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/tipos/${id}`);
+  }
+
+  editarPokemon(id: number, pokemon: { nombre: string; nivel: number; tipo: { id: number } }): Observable<Pokemon> {
+    return this.http.put<Pokemon>(`${this.apiUrl}/pokemones/${id}`, pokemon);
+  }
+
+  borrarPokemon(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/pokemones/${id}`);
+  }
 }
