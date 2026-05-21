@@ -57,31 +57,41 @@ import { TipoService, Tipo } from '../../services/tipo';
     }
   `,
   styles: [`
-    h2 { margin-bottom: 4px; }
-    .subtitulo { color: #666; margin-bottom: 24px; }
+    h2 { margin-bottom: 4px; color: #333; font-size: 26px; text-shadow: 1px 1px 0 white; }
+    .subtitulo { color: #555; margin-bottom: 24px; font-weight: 600; text-shadow: 0 1px 2px white; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
-    .card { border-radius: 10px; border: 1px solid #ddd; border-left: 6px solid #ccc; background: white; }
+    .card {
+      border-radius: 12px;
+      border: 2px solid rgba(0,0,0,0.15);
+      border-left: 6px solid #ccc;
+      background: rgba(255, 255, 230, 0.85);
+      backdrop-filter: blur(4px);
+      transition: box-shadow 0.2s, transform 0.2s;
+      box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+    }
+    .card:hover { box-shadow: 4px 8px 20px rgba(0,0,0,0.3); transform: translateY(-3px); }
     .card-body { padding: 16px; }
     .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .badge { color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+    .badge { color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
     .acciones { display: flex; gap: 6px; }
-    .btn-editar, .btn-borrar { background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px; border-radius: 4px; }
-    .btn-editar:hover { background: #f0f0f0; }
-    .btn-borrar:hover { background: #ffe0e0; }
-    .ver-mas { font-size: 13px; color: #888; text-decoration: none; }
-    .ver-mas:hover { text-decoration: underline; }
-    .error { color: red; }
+    .btn-editar, .btn-borrar { background: none; border: none; cursor: inherit; font-size: 16px; padding: 4px; border-radius: 4px; }
+    .btn-editar:hover { background: rgba(0,0,0,0.08); }
+    .btn-borrar:hover { background: rgba(204,0,0,0.15); }
+    .ver-mas { font-size: 13px; color: #666; text-decoration: none; font-weight: 600; }
+    .ver-mas:hover { color: #cc0000; }
+    .error { color: #cc0000; }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
-    .modal { background: white; border-radius: 12px; padding: 24px; width: 400px; }
-    .modal h3 { margin-bottom: 20px; }
+    .modal { background: #fffff0; border: 2px solid rgba(0,0,0,0.15); border-radius: 12px; padding: 24px; width: 400px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+    .modal h3 { margin-bottom: 20px; color: #333; }
     .campo { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
-    label { font-weight: 500; font-size: 14px; }
-    input[type="text"] { padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+    label { font-weight: 600; font-size: 14px; color: #555; }
+    input[type="text"] { padding: 10px 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 15px; background: white; color: #333; }
+    input[type="text"]:focus { outline: none; border-color: #cc0000; }
     .color-row { display: flex; align-items: center; gap: 12px; }
-    input[type="color"] { width: 48px; height: 36px; border: none; cursor: pointer; }
+    input[type="color"] { width: 48px; height: 36px; border: none; cursor: inherit; }
     .botones { display: flex; gap: 12px; margin-top: 20px; }
-    .btn-cancelar { padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; background: none; cursor: pointer; }
-    .btn-enviar { padding: 10px 24px; background: #cc0000; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    .btn-cancelar { padding: 10px 20px; border: 2px solid #ddd; border-radius: 20px; background: white; color: #333; cursor: inherit; font-weight: 600; }
+    .btn-enviar { padding: 10px 24px; background: #cc0000; color: white; border: none; border-radius: 20px; cursor: inherit; font-weight: 600; }
     .btn-enviar:disabled { background: #aaa; }
   `]
 })
@@ -101,9 +111,7 @@ export class ListaTiposComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.cargarTipos();
-  }
+  ngOnInit() { this.cargarTipos(); }
 
   cargarTipos() {
     this.tipoService.getTipos().subscribe({
@@ -124,24 +132,17 @@ export class ListaTiposComponent implements OnInit {
     this.formEdicion.setValue({ nombre: tipo.nombre, color: tipo.color });
   }
 
-  cerrarEdicion() {
-    this.editando.set(null);
-  }
+  cerrarEdicion() { this.editando.set(null); }
 
   guardarEdicion() {
     if (this.formEdicion.invalid || !this.editando()) return;
     this.tipoService.editarTipo(this.editando()!.id, this.formEdicion.value).subscribe({
-      next: () => {
-        this.cerrarEdicion();
-        this.cargarTipos();
-      }
+      next: () => { this.cerrarEdicion(); this.cargarTipos(); }
     });
   }
 
   borrar(id: number) {
     if (!confirm('¿Seguro que quieres borrar este tipo? Se borrarán también sus pokémon.')) return;
-    this.tipoService.borrarTipo(id).subscribe({
-      next: () => this.cargarTipos()
-    });
+    this.tipoService.borrarTipo(id).subscribe({ next: () => this.cargarTipos() });
   }
 }

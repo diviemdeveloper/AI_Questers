@@ -13,7 +13,7 @@ import { TipoService, Tipo, Pokemon } from '../../services/tipo';
     @if (cargando()) { <p>Cargando...</p> }
 
     @if (tipo()) {
-      <div class="cabecera" [style.border-color]="tipo()!.color">
+      <div class="cabecera" [style.border-left-color]="tipo()!.color">
         <div class="badge" [style.background]="tipo()!.color">{{ tipo()!.nombre }}</div>
         <h2>Pokémon de tipo {{ tipo()!.nombre }}</h2>
         <p>{{ pokemones().length }} pokémon encontrados</p>
@@ -62,28 +62,32 @@ import { TipoService, Tipo, Pokemon } from '../../services/tipo';
     }
   `,
   styles: [`
-    .volver { display: inline-block; margin-bottom: 24px; color: #cc0000; text-decoration: none; }
-    .volver:hover { text-decoration: underline; }
-    .cabecera { border-left: 6px solid; padding-left: 16px; margin-bottom: 24px; }
-    .badge { display: inline-block; color: white; padding: 4px 12px; border-radius: 20px; font-size: 13px; margin-bottom: 8px; }
+    .volver { display: inline-block; margin-bottom: 24px; color: #333; text-decoration: none; font-weight: 600; background: rgba(255,255,230,0.85); padding: 6px 14px; border-radius: 20px; border: 2px solid rgba(0,0,0,0.15); }
+    .volver:hover { color: #cc0000; }
+    .cabecera { border-left: 6px solid; padding: 16px; margin-bottom: 24px; background: rgba(255,255,230,0.85); border-radius: 12px; box-shadow: 2px 4px 8px rgba(0,0,0,0.2); }
+    .cabecera h2 { color: #333; }
+    .cabecera p { color: #666; }
+    .badge { display: inline-block; color: white; padding: 4px 12px; border-radius: 20px; font-size: 13px; margin-bottom: 8px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
     .lista { display: flex; flex-direction: column; gap: 10px; }
-    .pokemon-card { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border: 1px solid #eee; border-radius: 8px; background: white; }
+    .pokemon-card { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border: 2px solid rgba(0,0,0,0.1); border-radius: 10px; background: rgba(255,255,230,0.85); box-shadow: 2px 4px 8px rgba(0,0,0,0.15); transition: transform 0.15s; }
+    .pokemon-card:hover { transform: translateX(4px); }
     .pokemon-id { color: #aaa; font-size: 13px; min-width: 30px; }
     .nivel { color: #666; font-size: 13px; }
     .acciones { margin-left: auto; display: flex; gap: 6px; }
-    .btn-editar, .btn-borrar { background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px; border-radius: 4px; }
-    .btn-editar:hover { background: #f0f0f0; }
-    .btn-borrar:hover { background: #ffe0e0; }
-    .error { color: red; }
+    .btn-editar, .btn-borrar { background: none; border: none; cursor: inherit; font-size: 16px; padding: 4px; border-radius: 4px; }
+    .btn-editar:hover { background: rgba(0,0,0,0.08); }
+    .btn-borrar:hover { background: rgba(204,0,0,0.15); }
+    .error { color: #cc0000; }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
-    .modal { background: white; border-radius: 12px; padding: 24px; width: 400px; }
-    .modal h3 { margin-bottom: 20px; }
+    .modal { background: #fffff0; border: 2px solid rgba(0,0,0,0.15); border-radius: 12px; padding: 24px; width: 400px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+    .modal h3 { margin-bottom: 20px; color: #333; }
     .campo { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
-    label { font-weight: 500; font-size: 14px; }
-    input { padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+    label { font-weight: 600; font-size: 14px; color: #555; }
+    input { padding: 10px 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 15px; background: white; color: #333; }
+    input:focus { outline: none; border-color: #cc0000; }
     .botones { display: flex; gap: 12px; margin-top: 20px; }
-    .btn-cancelar { padding: 10px 20px; border: 1px solid #ccc; border-radius: 6px; background: none; cursor: pointer; }
-    .btn-enviar { padding: 10px 24px; background: #cc0000; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    .btn-cancelar { padding: 10px 20px; border: 2px solid #ddd; border-radius: 20px; background: white; color: #333; cursor: inherit; font-weight: 600; }
+    .btn-enviar { padding: 10px 24px; background: #cc0000; color: white; border: none; border-radius: 20px; cursor: inherit; font-weight: 600; }
     .btn-enviar:disabled { background: #aaa; }
   `]
 })
@@ -115,22 +119,12 @@ export class DetalleTipoComponent implements OnInit {
 
   cargarDatos() {
     this.tipoService.getTipoById(this.tipoId).subscribe({
-      next: (t) => {
-        this.tipo.set(t);
-        this.tipoService.tipoSeleccionado.set(t);
-      },
+      next: (t) => { this.tipo.set(t); this.tipoService.tipoSeleccionado.set(t); },
       error: () => this.error.set('Tipo no encontrado.')
     });
-
     this.tipoService.getPokemonesByTipo(this.tipoId).subscribe({
-      next: (lista) => {
-        this.pokemones.set(lista);
-        this.cargando.set(false);
-      },
-      error: () => {
-        this.error.set('Error al cargar los pokémon.');
-        this.cargando.set(false);
-      }
+      next: (lista) => { this.pokemones.set(lista); this.cargando.set(false); },
+      error: () => { this.error.set('Error al cargar los pokémon.'); this.cargando.set(false); }
     });
   }
 
@@ -139,29 +133,18 @@ export class DetalleTipoComponent implements OnInit {
     this.formEdicion.setValue({ nombre: pokemon.nombre, nivel: pokemon.nivel });
   }
 
-  cerrarEdicion() {
-    this.editando.set(null);
-  }
+  cerrarEdicion() { this.editando.set(null); }
 
   guardarEdicion() {
     if (this.formEdicion.invalid || !this.editando()) return;
-    const payload = {
-      nombre: this.formEdicion.value.nombre,
-      nivel: this.formEdicion.value.nivel,
-      tipo: { id: this.tipoId }
-    };
+    const payload = { nombre: this.formEdicion.value.nombre, nivel: this.formEdicion.value.nivel, tipo: { id: this.tipoId } };
     this.tipoService.editarPokemon(this.editando()!.id, payload).subscribe({
-      next: () => {
-        this.cerrarEdicion();
-        this.cargarDatos();
-      }
+      next: () => { this.cerrarEdicion(); this.cargarDatos(); }
     });
   }
 
   borrarPokemon(id: number) {
     if (!confirm('¿Seguro que quieres borrar este pokémon?')) return;
-    this.tipoService.borrarPokemon(id).subscribe({
-      next: () => this.cargarDatos()
-    });
+    this.tipoService.borrarPokemon(id).subscribe({ next: () => this.cargarDatos() });
   }
 }
