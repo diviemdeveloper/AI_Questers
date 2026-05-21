@@ -79,7 +79,7 @@ El frontend arranca en: http://localhost:4200
 
 ---------------------------------------------------------------------------------------------------------
 
-## Modelo de datos
+-Modelo de datos
 Tipo (1) ────── Pokémon (M)
 
 id            - id
@@ -130,8 +130,20 @@ Relación 1:M entre Tipo y Pokémon
 Base de datos H2 en memoria
 CRUD básico (listar, ver detalle, crear)
 CRUD opcional (borrar, editar)
+Búsqueda y filtrado en tiempo real
+Paginación de pokémon
+Mensajes de confirmación y error visuales
+Modal de confirmación antes de borrar
 
 -Anotación
 
 Al arrancar el backend se cargan automáticamente los 151 pokémon 
 de la primera generación desde el archivo data.sql
+
+-Funcionalidades
+
+Consultar todos los tipos de pokémon con su color identificativo
+Ver todos los pokémon de un tipo con paginación
+Buscar tipos por nombre y pokémon por nombre en tiempo real
+Crear, editar y borrar tipos y pokémon
+Mensajes visuales de éxito y error en todas las operaciones
